@@ -1,0 +1,84 @@
+{
+  "answer": "A",
+  "selected_guide": "AAVS1_site_10",
+  "rationale": "AAVS1_site_10 is the only candidate whose GUIDE-seq profile is a single genomic site: exactly one detected cleavage site in the entire table, at distance 0 (perfect protospacer match) in AAVS1 on chr19. Every other candidate carries 4-121 additional off-target sites.",
+  "candidate_comparison": [
+    {
+      "letter": "A",
+      "guide_name": "AAVS1_site_10",
+      "detected_sites_total": 1,
+      "on_target_rows": 1,
+      "off_target_sites": 0,
+      "runs_present": [3],
+      "verdict": "advance - single site genome-wide"
+    },
+    {
+      "letter": "D",
+      "guide_name": "AAVS1_site_3",
+      "detected_sites_total": 7,
+      "on_target_rows": 3,
+      "off_target_sites": 4,
+      "runs_present": [1, 2, 3],
+      "verdict": "reject - 4 off-targets"
+    },
+    {
+      "letter": "C",
+      "guide_name": "AAVS1_site_14",
+      "detected_sites_total": 32,
+      "on_target_rows": 1,
+      "off_target_sites": 31,
+      "runs_present": [2],
+      "verdict": "reject - 31 off-targets"
+    },
+    {
+      "letter": "B",
+      "guide_name": "AAVS1_site_13",
+      "detected_sites_total": 53,
+      "on_target_rows": 1,
+      "off_target_sites": 52,
+      "runs_present": [2],
+      "verdict": "reject - 52 off-targets"
+    },
+    {
+      "letter": "E",
+      "guide_name": "CXCR4_site_3",
+      "detected_sites_total": 122,
+      "on_target_rows": 1,
+      "off_target_sites": 121,
+      "runs_present": [1],
+      "verdict": "reject - 121 off-targets, least specific candidate"
+    }
+  ],
+  "selected_guide_detail": {
+    "name": "AAVS1_site_10",
+    "target_with_pam": "GGGAACCCAGCGAGTGAAGANGG",
+    "detected_sequence": "GGGAACCCAGCGAGTGAAGACGG",
+    "genomic_coordinate": "chr19:55116263-55116285:+",
+    "chrom": "chr19",
+    "chrom_start": 55116262,
+    "chrom_end": 55116285,
+    "mismatch_distance": 0,
+    "run": 3,
+    "sheet_row": 13
+  },
+  "method": {
+    "data_source": "Google Sheets 1GcdyWLyij0QwbXazW1pQw9dfZPeBjMoIM0GqpNH8eHw, tab CHANGE-seq_Supp_Table_6",
+    "source_nature": "GUIDE-seq output table: one row per detected cleavage site, with distance = mismatches to the target protospacer (0 = on-target) and run = sequencing run",
+    "data_rows": 1702,
+    "distinct_guides": 60,
+    "on_target_rows_total": 86,
+    "off_target_rows_total": 1616,
+    "runs_present": [1, 2, 3, 4],
+    "metric": "number of detected sites per guide, split by distance == 0 vs distance > 0",
+    "verification": [
+      "Column D (name) read in full and AAVS1_site_10 confirmed to occur exactly once across all 1702 data rows",
+      "Row 13 read directly and confirmed to be distance 0 at chr19:55116263-55116285"
+    ]
+  },
+  "limitations": {
+    "fastq_not_reprocessed": true,
+    "detail": "SRX8228066-69 could not be retrieved: this environment's network egress proxy blocks www.ncbi.nlm.nih.gov, eutils.ncbi.nlm.nih.gov and the EBI/ENA mirror www.ebi.ac.uk. The guideseq pipeline also requires sra-tools and bwa (not installed) plus a BWA-indexed human reference. The conclusion therefore rests on the published GUIDE-seq site calls in the supplementary table rather than on a re-run of the pipeline over the raw reads.",
+    "read_counts_unavailable": "The sheet carries no read-count column, so 'efficiently' is assessed as detection of the on-target site with no off-target sites, not as on-target read depth.",
+    "single_run_caveat": "AAVS1_site_10 is reported in run 3 only, so its zero off-target count rests on one run rather than replicate runs."
+  }
+}
