@@ -348,7 +348,17 @@ def analyze(sam_filename, reference_genome, outfile, annotations, windowsize, ma
 	temp = open(outfile+".primer.tsv", 'w')
 	tl_filter = open(outfile+".tl_filter.tsv", 'w')
 	logger.info("Processing SAM file %s", sam_filename)
-	file = open(sam_filename, 'r')
+	# Accept either a text SAM or a BAM. The alignment records are consumed once,
+	# sequentially, so a BAM is streamed through `samtools view` rather than
+	# decompressed to disk first.
+	samtools_proc = None
+	if sam_filename.endswith('.bam'):
+		import subprocess as _sp
+		samtools_proc = _sp.Popen(['samtools', 'view', sam_filename],
+								  stdout=_sp.PIPE, universal_newlines=True)
+		file = samtools_proc.stdout
+	else:
+		file = open(sam_filename, 'r')
 	__, filename_tail = os.path.split(sam_filename)
 	chromosome_position = chromosomePosition(reference_genome)
 	# control_primer_obj = chromosomePosition(reference_genome)
@@ -403,6 +413,11 @@ def analyze(sam_filename, reference_genome, outfile, annotations, windowsize, ma
 					chromosome_position.addPositionBarcode(chromosome, read_position, strand, barcode, primer, count)
 				# if primer == "nomatch":
 				print (full_read_name,read_sequence,sam_flag,chromosome,read_position,seq,myDistance,distance2,primer,sep="\t",file=temp)
+
+	if samtools_proc is not None:
+		file.close()
+		if samtools_proc.wait() != 0:
+			raise RuntimeError('samtools view failed on %s' % sam_filename)
 
 	# Generate barcode position summary
 	stacked_summary = chromosome_position.SummarizeBarcodePositions() # this stacked summary is not used

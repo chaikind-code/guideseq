@@ -22,7 +22,7 @@ def alignReads(HG19_path, read1, read2, outfile,njobs=6,umi_tools="umi_tools",sa
 	# When several samples share one untreated control library there is no reason to
 	# align it more than once, and an interrupted run should be resumable. Skip the
 	# work if the deduplicated alignment for this name is already present.
-	final_sam = os.path.join(output_folder, sample_name + '.dedup.sam')
+	final_sam = os.path.join(output_folder, sample_name + '.dedup.bam')
 	if os.path.isfile(final_sam) and os.path.getsize(final_sam) > 0:
 		logger.info('Alignment already present for %s, skipping (%s)', sample_name, final_sam)
 		return
@@ -69,7 +69,20 @@ def alignReads(HG19_path, read1, read2, outfile,njobs=6,umi_tools="umi_tools",sa
 	os.system(command)
 	# command = "{0} dedup --stdin={1}/{2}.st.bam --log={1}/{2}.dedup.log --output-stats={1}/{2}.stats.tsv --paired > {1}/{2}.dedup.bam;{3} index {1}/{2}.dedup.bam;{3} view {1}/{2}.dedup.bam > {1}/{2}.dedup.sam".format(umi_tools,output_folder,sample_name,samtools)
 	# removing --output-stats, for large memory usage
-	command = "{0} dedup --method unique --stdin={1}/{2}.st.bam --log={1}/{2}.dedup.log --paired > {1}/{2}.dedup.bam;{3} index {1}/{2}.dedup.bam;{3} view {1}/{2}.dedup.bam > {1}/{2}.dedup.sam".format(umi_tools,output_folder,sample_name,samtools)
+	# Stop here at the deduplicated BAM. The decompressed text SAM this used to
+	# write is read exactly once, by identifyOfftargetSites, which now streams the
+	# BAM instead; for a full-depth library the text copy is several gigabytes.
+	command = "{0} dedup --method unique --stdin={1}/{2}.st.bam --log={1}/{2}.dedup.log --paired > {1}/{2}.dedup.bam;{3} index {1}/{2}.dedup.bam".format(umi_tools,output_folder,sample_name,samtools)
 	logger.info(command)
 	os.system(command)
+	# The coordinate-sorted BAM is only an input to umi_tools; once the
+	# deduplicated alignment exists it is dead weight, and for a full-depth
+	# library it is several gigabytes.
+	if os.path.isfile(final_sam) and os.path.getsize(final_sam) > 0:
+		for junk in ['{0}/{1}.st.bam'.format(output_folder, sample_name),
+					 '{0}/{1}.st.bam.bai'.format(output_folder, sample_name)]:
+			try:
+				os.remove(junk)
+			except OSError:
+				pass
 	logger.info('Paired end mapping for {0} completed.'.format(sample_name))

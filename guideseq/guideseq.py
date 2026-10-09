@@ -266,7 +266,7 @@ class GuideSeq:
 							self.samples[sample]['controlread1'] = os.path.join(self.parameters['demultiplex']['out_dir'], f"Control_{sample}.r1.fastq")
 							self.samples[sample]['controlread2'] = os.path.join(self.parameters['demultiplex']['out_dir'], f"Control_{sample}.r2.fastq")
 					
-					sample_alignment_path = os.path.join(self.parameters['analysis_folder'], 'aligned', sample + '.dedup.sam')
+					sample_alignment_path = os.path.join(self.parameters['analysis_folder'], 'aligned', sample + '.dedup.bam')
 					# (HG19_path, read1, read2, outfile,njobs=6,umi_tools="umi_tools",samtools="samtools",bwa="bwa"):
 					alignReads(self.parameters['reference_genome'],
 							   self.samples[sample]['read1'],
@@ -279,7 +279,7 @@ class GuideSeq:
 							   )
 					self.samples[sample]['aligned'] = sample_alignment_path
 					# sample = "control_"+sample
-					sample_alignment_path = os.path.join(self.parameters['analysis_folder'], 'aligned', "Control_"+sample + '.dedup.sam')
+					sample_alignment_path = os.path.join(self.parameters['analysis_folder'], 'aligned', "Control_"+sample + '.dedup.bam')
 					alignReads(self.parameters['reference_genome'],
 							   self.samples[sample]['controlread1'],
 							   self.samples[sample]['controlread2'],
@@ -311,8 +311,8 @@ class GuideSeq:
 				try:
 					# default input
 					if not "aligned" in self.samples[sample]:
-						self.samples[sample]['aligned'] = os.path.join(self.parameters['analysis_folder'], 'aligned', sample + '.dedup.sam')
-						self.samples[sample]['controlaligned'] = os.path.join(self.parameters['analysis_folder'], 'aligned', "Control_"+sample + '.dedup.sam')
+						self.samples[sample]['aligned'] = os.path.join(self.parameters['analysis_folder'], 'aligned', sample + '.dedup.bam')
+						self.samples[sample]['controlaligned'] = os.path.join(self.parameters['analysis_folder'], 'aligned', "Control_"+sample + '.dedup.bam')
 					# Prepare sample annotations
 					sample_data = self.samples[sample]
 					annotations = {}
