@@ -1,0 +1,49 @@
+{
+  "task": {
+    "description": "You are using guide-seq to evaluate a series of guideRNAs for their ability to efficiently integrate into a single site within the genome. Choose the guide RNA that you would advance for further studies by picking the correct guide name.",
+    "objective": "Select the single guide RNA with efficient integration at one genomic site (high on-target, minimal off-target activity)."
+  },
+  "resources": {
+    "spreadsheet": {
+      "url": "https://docs.google.com/spreadsheets/d/1GcdyWLyij0QwbXazW1pQw9dfZPeBjMoIM0GqpNH8eHw/edit?gid=770166642#gid=770166642",
+      "spreadsheet_id": "1GcdyWLyij0QwbXazW1pQw9dfZPeBjMoIM0GqpNH8eHw",
+      "gid": "770166642",
+      "contents": "Guide names, guide sequences, and off-target sequences"
+    },
+    "analysis_package": {
+      "name": "guideseq",
+      "url": "https://github.com/chaikind-code/guideseq"
+    },
+    "sequencing_data": [
+      {
+        "accession": "SRX8228066",
+        "url": "https://www.ncbi.nlm.nih.gov/sra/SRX8228066[accn]"
+      },
+      {
+        "accession": "SRX8228067",
+        "url": "https://www.ncbi.nlm.nih.gov/sra/SRX8228067[accn]"
+      },
+      {
+        "accession": "SRX8228068",
+        "url": "https://www.ncbi.nlm.nih.gov/sra/SRX8228068[accn]"
+      },
+      {
+        "accession": "SRX8228069",
+        "url": "https://www.ncbi.nlm.nih.gov/sra/SRX8228069[accn]"
+      }
+    ]
+  },
+  "options": [
+    { "letter": "A", "guide_name": "AAVS1_site_10", "raw_label": "AAVS1_site_10 AA" },
+    { "letter": "B", "guide_name": "AAVS1_site_13", "raw_label": "AAVS1_site_13 " },
+    { "letter": "C", "guide_name": "AAVS1_site_14", "raw_label": "AAVS1_site_14" },
+    { "letter": "D", "guide_name": "AAVS1_site_3", "raw_label": "AAVS1_site_3 " },
+    { "letter": "E", "guide_name": "CXCR4_site_3", "raw_label": "CXCR4_site_3 " }
+  ],
+  "response_format": {
+    "choose": "exactly one option",
+    "allowed_letters": ["A", "B", "C", "D", "E"],
+    "template": "<EVAL_ANSWER>\n{\"answer\": \"<LETTER>\"}\n</EVAL_ANSWER>",
+    "notes": "Replace <LETTER> with a single letter A, B, C, D or E. Use raw JSON inside the EVAL_ANSWER tags."
+  }
+}
