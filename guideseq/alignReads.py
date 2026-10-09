@@ -40,18 +40,23 @@ def alignReads(HG19_path, read1, read2, outfile,njobs=6,umi_tools="umi_tools",sa
 
 	# Run paired end alignment against the genome
 	logger.info('Running paired end mapping for {0}'.format(sample_name))
-	bwa_alignment_command = '{0} mem -t {1} {2} {3} {4} > {5}/{6}.sam'.format(bwa,
+	# Stream bwa output straight into coordinate sorting. Avoids writing the
+	# intermediate .sam/.bam, which for a full-depth GUIDE-seq library is tens of
+	# gigabytes; the sorted BAM produced is identical to the previous three-step form.
+	bwa_alignment_command = '{0} mem -t {1} {2} {3} {4} | {5} sort -@ 2 -m 1G -o {6}/{7}.st.bam -'.format(bwa,
 														 njobs,
 														 HG19_path,
 														 read1,
 														 read2,
+														 samtools,
 														 output_folder,
 														 sample_name
 														 )
 
 	logger.info(bwa_alignment_command)
-	os.system(bwa_alignment_command)
-	command = "{0} view -bS {1}/{2}.sam > {1}/{2}.bam;{0} sort -o {1}/{2}.st.bam {1}/{2}.bam;{0} index {1}/{2}.st.bam".format(samtools,output_folder,sample_name)
+	if os.system(bwa_alignment_command) != 0:
+		raise RuntimeError('bwa/samtools sort failed for %s' % sample_name)
+	command = "{0} index {1}/{2}.st.bam".format(samtools,output_folder,sample_name)
 	logger.info(command)
 	os.system(command)
 	# command = "{0} dedup --stdin={1}/{2}.st.bam --log={1}/{2}.dedup.log --output-stats={1}/{2}.stats.tsv --paired > {1}/{2}.dedup.bam;{3} index {1}/{2}.dedup.bam;{3} view {1}/{2}.dedup.bam > {1}/{2}.dedup.sam".format(umi_tools,output_folder,sample_name,samtools)

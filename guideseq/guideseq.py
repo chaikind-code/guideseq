@@ -36,9 +36,9 @@ def get_parameters(manifest_data):
 	# init
 	default_refseqName = os.path.dirname(os.path.realpath(__file__)) + "/refseq_gene_name.py"
 	with open(DEFAULT_YAML, 'r') as f:
-		default = yaml.load(f)
+		default = yaml.safe_load(f)
 	with open(manifest_data, 'r') as f:
-		return_dict = yaml.load(f) # this is user input YAML
+		return_dict = yaml.safe_load(f) # this is user input YAML
 	default['analysis_folder'] = os.getcwd()
 	default['refseq_names'] = default_refseqName
 	default['Manhattan.R'] = os.path.dirname(os.path.realpath(__file__)) + "/Manhattan.R"
@@ -446,13 +446,13 @@ def parse_args():
 	parallel_parser.add_argument('--sample', '-s', help='Specify sample to process (default is all)', default='all')
 	parallel_parser.add_argument('--lsf', '-l', help='Specify LSF CMD', default='bsub -n 12 -R "span[hosts=1] rusage[mem=12000]" -P GUIDEseqV2 -q standard -o HPC_parallel_log/GUIDEseqV2_{Sample_Name}_%J.log')
 	parallel_parser.add_argument('--step', help='Specify which steps of pipepline to run (demultiplex, align, identify,visualize)', default='demultiplex+align+identify+visualize')
-	parallel_parser.add_argument('--overwrite', help='overwrite specifications in the yaml file', default=None,type=yaml.load)
+	parallel_parser.add_argument('--overwrite', help='overwrite specifications in the yaml file', default=None,type=yaml.safe_load)
 
 	main_parser = subparsers.add_parser('main', help='Run a single step or a series of steps for one or all samples')
 	main_parser.add_argument('--manifest', '-m', help='Specify the manifest Path', required=True)
 	main_parser.add_argument('--sample', '-s', help='Specify sample to process (default is all)', default='all')
 	main_parser.add_argument('--step', help='Specify steps, demultiplex, align, identify,visualize, order does not matter', default='demultiplex+align+identify+visualize')
-	main_parser.add_argument('--overwrite', help='overwrite specifications in the yaml file', default=None,type=yaml.load)
+	main_parser.add_argument('--overwrite', help='overwrite specifications in the yaml file', default=None,type=yaml.safe_load)
 	
 	init_parser = subparsers.add_parser('init', help='initialize a default yaml in the current folder')
 
