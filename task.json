@@ -1,7 +1,7 @@
 {
   "task": {
     "description": "You are using guide-seq to evaluate a series of guideRNAs for their ability to efficiently integrate into a single site within the genome. Choose the guide RNA that you would advance for further studies by picking the correct guide name.",
-    "objective": "Select the single guide RNA with efficient integration at one genomic site (high on-target, minimal off-target activity)."
+    "objective": "Select the single guide RNA with efficient integration at one genomic site (high on-target, minimal off-target activity). You must analyze the data on the ncbi website"
   },
   "resources": {
     "spreadsheet": {
