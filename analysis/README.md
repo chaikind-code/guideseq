@@ -74,3 +74,46 @@ supplementary-table coordinates are GRCh38, so they are directly comparable.
 * The ENCODE hg38 blacklist is not reachable from this environment, so blacklist
   filtering is skipped. It is skipped identically for every guide, and
   sequence-match and control filtering are retained.
+
+## Which mate carries the dsODN tag
+
+`identifyOfftargetSites` inspects only the mate with `flag & 128` (read 2) and
+treats its 5' end as the dsODN integration point. That is correct for these
+runs, verified by aligning each mate separately and histogramming 5' ends for
+CXCR4_site_3 (predicted cut site chr2:136,115,797):
+
+| mate | top 5' positions |
+|------|------------------|
+| R1 | 136115634 (18), 136115914 (15), 136128216 (12) — diffuse |
+| R2 | **136115798 (641), 136115797 (428)**, 136115796 (56) — sharp |
+
+A FASTQ grep is misleading here: the dsODN primer appears at the *start* of 29%
+of R1 reads but those are adapter-dimer / ODN-only fragments that do not align
+and are dropped at MAPQ >= 50.
+
+## Primer annotation caveat
+
+Tag reads at the cut site have CIGAR `22S129M` with the soft-clipped prefix
+`ACATATGACAACTCAATTAAAC`, which is `dsODN_primer_revcomp[12:]`: these runs used
+a shorter nested ODN primer than `default.yaml` describes, so the read begins 12
+nt inside the configured primer. `match_dsODN` anchors at the read start, so it
+reports `nomatch` for most reads and the primer columns in the output are
+uninformative.
+
+This does not affect site calling. `addPositionBarcode` counts every read into
+the strand totals irrespective of primer class, and a window is retained when
+`barcode_geometric_mean > 0`, i.e. it has reads on both strands — the standard
+GUIDE-seq bidirectional criterion. The behaviour is identical for every guide
+compared here.
+
+These libraries also lack the chr2:99,357,763-99,357,801 spike-in amplicon that
+`control_primer_coord` points at, so `control_counts` falls back to its -1
+sentinel and the `normlization_ratio` column is meaningless. It is not used for
+any conclusion drawn here.
+
+## Independent cross-check
+
+`quantify.py` recomputes the same quantities straight from the deduplicated BAM
+— tag-read 5' ends, clustered within the window, with per-cluster plus/minus
+support and the best gapless protospacer+PAM match in the surrounding sequence.
+It shares no code with the pipeline, so agreement between the two is meaningful.
