@@ -19,6 +19,14 @@ def alignReads(HG19_path, read1, read2, outfile,njobs=6,umi_tools="umi_tools",sa
 
 	sample_alignment_paths = {}
 
+	# When several samples share one untreated control library there is no reason to
+	# align it more than once, and an interrupted run should be resumable. Skip the
+	# work if the deduplicated alignment for this name is already present.
+	final_sam = os.path.join(output_folder, sample_name + '.dedup.sam')
+	if os.path.isfile(final_sam) and os.path.getsize(final_sam) > 0:
+		logger.info('Alignment already present for %s, skipping (%s)', sample_name, final_sam)
+		return
+
 	# Check if genome is already indexed by bwa
 	index_files_extensions = ['.pac', '.amb', '.ann', '.bwt', '.sa']
 
